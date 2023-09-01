@@ -3,29 +3,24 @@ requires = ["flit"]
 build-backend = "flit.buildapi"
 
 [project]
-name =  "py-project-toml"
+name =  "specarray"
 authors = [
-    {name = "Daniel Ciborowski", email = "dciborow@microsoft.com"},
+    {name = "Thomas Gölles", email = "thomas.goelles@gmail.com"},
 ]
-description = "Sample Python Project for creating a new Python Module"
+description = "Working with hyperspectral data"
 readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11"
 ]
-requires-python = ">=3.8.1"
+requires-python = ">=3.10.1"
 dynamic = ["version"]
 
 [project.optional-dependencies]
-spark = [
-    "pyspark>=3.0.0"
-]
 test = [
     "bandit[toml]==1.7.5",
     "black==23.3.0",
@@ -47,9 +42,9 @@ test = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/microsoft/python-package-template/tree/main#readme"
-Source = "https://github.com/microsoft/python-package-template"
-Tracker = "https://github.com/microsoft/python-package-template/issues"
+Documentation = "https://github.com/tgoelles/specarray/tree/main#readme"
+Source = "https://github.com/tgoelles/specarray"
+Tracker = "https://github.com/tgoelles/specarray/issues"
 
 [tool.flit.module]
 name = "python_package"
