@@ -33,7 +33,7 @@ plt.ylim(0, 1)
 ```
 
 The resulting imgage should look like this:
-![Spectrum](images/output.png)
+![Spectrum](https://github.com/tgoelles/specarray/blob/main/images/output.png?raw=true)
 
 
 
