@@ -37,4 +37,4 @@ The resulting imgage should look like this:
 
 
 
-For more examples see the [notebooks](notebooks) folder.
+For more examples see the [notebooks](https://github.com/tgoelles/specarray/tree/main/notebooks) folder.
