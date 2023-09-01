@@ -51,7 +51,7 @@ test = [
 
 
 [project.urls]
-Documentation = "https://github.com/tgoelles/specarray/tree/main#readme"
+Documentation = "https://tgoelles.github.io/specarray/"
 Source = "https://github.com/tgoelles/specarray"
 Tracker = "https://github.com/tgoelles/specarray/issues"
 
