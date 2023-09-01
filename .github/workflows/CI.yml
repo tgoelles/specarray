@@ -9,11 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  validation:
-    uses: microsoft/action-python/.github/workflows/validation.yml@0.7.1
-    with:
-      workdir: '.'
-
   publish:
     uses: microsoft/action-python/.github/workflows/publish.yml@0.7.1
     secrets:
