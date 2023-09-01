@@ -22,7 +22,7 @@ import numpy as np
 
 
 @dataclass
-class Specim:
+class SpecArray:
     """Class for Specim hyperspectral Camera data"""
 
     folder: Path
@@ -84,9 +84,7 @@ class Specim:
             self.spectral_albedo.coords["wavelength"].max().values
             - self.spectral_albedo.coords["wavelength"].min().values
         )
-        broadband_albedo = xr.DataArray(
-            broadband_albedo, dims=["sample", "point"], name="broadband_albedo"
-        )
+        broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband_albedo")
         return broadband_albedo
 
     def _find_files(self):
@@ -129,9 +127,7 @@ class Specim:
 
     def _get_wavelenghts(self):
         """Set the wavelenghts"""
-        return pd.Series(
-            pd.to_numeric(self.metadata["wavelength"]), name="wavelenghts (nm)"
-        )
+        return pd.Series(pd.to_numeric(self.metadata["wavelength"]), name="wavelenghts (nm)")
 
     def _gen_wavelength_point_df(self, raw_array: ndarray):
         """Generate a dataframe with the wavelenghts as index and points as colums"""
