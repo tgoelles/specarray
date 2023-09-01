@@ -46,7 +46,7 @@ Source = "https://github.com/tgoelles/specarray"
 Tracker = "https://github.com/tgoelles/specarray/issues"
 
 [tool.flit.module]
-name = "python_package"
+name = "specarray"
 
 [tool.bandit]
 exclude_dirs = ["build","dist","tests","scripts"]
