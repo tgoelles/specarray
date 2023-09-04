@@ -1,13 +1,13 @@
 # SPECARRAY
 
-To read hyperspectral data from Specim devices. Currently only tested with FX10 data
+To read, analyze and plot hyperspectral data from Specim devices. Currently only tested with FX10 data.
 
 ## Core features
 
 * read Specim FX10 data
 * support for large files thanks to dask
 * using xarray for data handling and data analysis
-* computaiton of spectral albedo and braodband albedo if white and dark reference is available
+* computation of spectral albedo and braodband albedo if white and dark reference is available
 
 ## Installation
 
