@@ -8,7 +8,6 @@ from pathlib import Path
 import xarray as xr
 import pandas as pd
 from numpy import ndarray
-from spectral import imshow
 
 import dask.array as da
 import numpy as np
@@ -37,8 +36,8 @@ class SpecArray:
                 spectral_data = self._load_spectral_data(mode=mode)
                 data_array = self._create_data_array(spectral_data, mode)
                 setattr(self, mode, data_array)
-            except Exception as e:
-                print(f"An error occurred reading {mode}: {e}")
+            except Exception as exception:
+                print(f"An error occurred reading {mode}: {exception}")
 
     def __len__(self):
         """Return the number of records"""
