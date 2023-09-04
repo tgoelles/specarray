@@ -26,6 +26,7 @@ dependencies = [
   "xarray",
   "numpy",
   "dask",
+  "dask[diagnostics]",
   "spectral",
   "pandas",
   "matplotlib"
