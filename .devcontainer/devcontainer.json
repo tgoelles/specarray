@@ -18,7 +18,8 @@
 				"ryanluker.vscode-coverage-gutters",
 				"bungcip.better-toml",
 				"GitHub.copilot",
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"ms-toolsai.jupyter"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
