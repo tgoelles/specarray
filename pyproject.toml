@@ -27,7 +27,8 @@ dependencies = [
   "numpy",
   "dask",
   "spectral",
-  "pandas"
+  "pandas",
+  "matplotlib"
 
 ]
 
