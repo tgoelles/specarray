@@ -19,7 +19,8 @@
 				"bungcip.better-toml",
 				"GitHub.copilot",
 				"charliermarsh.ruff",
-				"ms-toolsai.jupyter"
+				"ms-toolsai.jupyter",
+				"ms-python.mypy-type-checker"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
