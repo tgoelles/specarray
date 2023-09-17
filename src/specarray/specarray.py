@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-
-import spectral.io.envi as envi
-from spectral.io.bilfile import BilFile
 from dataclasses import dataclass
 from pathlib import Path
-import xarray as xr
-import pandas as pd
-from numpy import ndarray
 
 import dask.array as da
 import numpy as np
+import pandas as pd
+import spectral.io.envi as envi
+import xarray as xr
+from numpy import ndarray
+from spectral.io.bilfile import BilFile
 
 
 @dataclass
@@ -63,6 +62,7 @@ class SpecArray:
 
     @property
     def spectral_albedo(self):
+        """Calculate and return the spectral albedo. The values are limited to 0 and 1."""
         spectral_albedo = (self.capture - self.black.mean(dim="sample")) / (
             self.white.mean(dim="sample") - self.black.mean(dim="sample")
         )
@@ -72,6 +72,7 @@ class SpecArray:
 
     @property
     def broadband_albedo(self):
+        """Calculate and return the broadband albedo"""
         broadband_albedo = np.trapz(
             self.spectral_albedo,
             self.spectral_albedo.coords["wavelength"],
@@ -120,11 +121,11 @@ class SpecArray:
 
         return envi.open(hdr_file_path, raw_file_path)
 
-    def _get_wavelenghts(self):
-        """Set the wavelenghts"""
+    def _get_wavelenghts(self) -> pd.Series:
+        """Return the wavelenghts as a pandas series"""
         return pd.Series(pd.to_numeric(self.metadata["wavelength"]), name="wavelenghts (nm)")
 
-    def _gen_wavelength_point_df(self, raw_array: ndarray):
+    def _gen_wavelength_point_df(self, raw_array: ndarray) -> pd.DataFrame:
         """Generate a dataframe with the wavelenghts as index and points as colums"""
         sample_df = pd.DataFrame(raw_array).transpose()
         sample_df["wavelenght (nm)"] = self.wavelengths
