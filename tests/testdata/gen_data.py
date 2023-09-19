@@ -5,6 +5,7 @@ import shutil
 
 import pandas as pd
 import spectral.io.envi as envi
+import xarray as xr
 
 
 thisdir = Path(__file__).parent.absolute()
@@ -17,13 +18,13 @@ def test_save_image_ndarray(prefix=""):
     wavelengths = pd.read_csv(thisdir / "wavelengths.csv")
     wavelengths = list(wavelengths["wavelengths (nm)"].values)
     if prefix == "":
-        data = pd.read_csv(thisdir / "capture.csv").values
+        data = xr.open_dataset("/workspaces/specarray/tests/testdata/capture.nc")["capture"]
     elif prefix == "DARKREF_":
-        data = pd.read_csv(thisdir / "black.csv").values
+        data = xr.open_dataset("/workspaces/specarray/tests/testdata/black.nc")["black"]
     elif prefix == "WHITEREF_":
-        data = pd.read_csv(thisdir / "white.csv").values
+        data = xr.open_dataset("/workspaces/specarray/tests/testdata/white.nc")["white"]
     fname = testdatadir / f"{prefix}{specim_ex_name}.hdr"
-    envi.save_image(fname, data, interleave="bil", metadata=dict(wavelength=wavelengths))
+    envi.save_image(fname, data.as_numpy().values, interleave="bil", metadata=dict(wavelength=wavelengths))
 
 
 def main():
