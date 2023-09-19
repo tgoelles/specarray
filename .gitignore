@@ -131,3 +131,6 @@ dmypy.json
 
 *.DS_Store
 notebooks/data*
+
+# ignore test data
+tests/testdata/specim_data
