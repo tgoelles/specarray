@@ -48,8 +48,8 @@ def _load_spectral_data(folder: Path, mode="capture"):
 
 
 def _extract_wavelengths(metadata) -> pd.Series:
-    """Return the wavelenghts as a pandas series"""
-    return pd.Series(pd.to_numeric(metadata["wavelength"]), name="wavelenghts (nm)")
+    """Return the wavelengths as a pandas series"""
+    return pd.Series(pd.to_numeric(metadata["wavelength"]), name="wavelengths (nm)")
 
 
 def _create_data_array(spectral_data: BilFile, mode: str, wavelengths: pd.Series) -> xr.DataArray:
