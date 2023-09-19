@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 data_dir = Path("data/white_weathering_crust_2_2023-07-15_15-25-24/")
 
-white_weathering_crust = SpecArray.from_dir(data_dir)
+white_weathering_crust = SpecArray.from_folder(data_dir)
 
 white_weathering_crust.capture
 
