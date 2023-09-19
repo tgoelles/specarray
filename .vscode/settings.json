@@ -8,7 +8,7 @@
         "editor.defaultFormatter": "vscode.json-language-features"
     },
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.python"
     },
     "python.defaultInterpreterPath": "/usr/local/bin/python",
     "python.formatting.provider": "black",
