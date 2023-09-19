@@ -1,3 +1,5 @@
+"""Class for Specim hyperspectral Camera data."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,31 +14,99 @@ from numpy import ndarray
 from spectral.io.bilfile import BilFile
 
 
+def _find_files(folder: Path):
+    """Find all files in the folder"""
+    capture_folder = folder / "capture"
+    hdr_files = list(capture_folder.glob("*.hdr"))
+    raw_files = list(capture_folder.glob("*.raw"))
+    return hdr_files, raw_files
+
+
+def _load_spectral_data(folder: Path, mode="capture"):
+    """Load the spectral data"""
+    hdr_files, raw_files = _find_files(folder)
+
+    hdr_file_path = None
+    raw_file_path = None
+
+    for hdr_file, raw_file in zip(hdr_files, raw_files):
+        if mode == "capture":
+            if not hdr_file.stem.startswith(("WHITEREF", "DARKREF")):
+                hdr_file_path = hdr_file
+                raw_file_path = raw_file
+                break
+        elif mode == "white":
+            prefix = "WHITEREF"
+            if hdr_file.stem.startswith(prefix):
+                hdr_file_path = hdr_file
+                raw_file_path = raw_file
+                break
+        elif mode == "black":
+            prefix = "DARKREF"
+            if hdr_file.stem.startswith(prefix):
+                hdr_file_path = hdr_file
+                raw_file_path = raw_file
+                break
+
+    if hdr_file_path is None or raw_file_path is None:
+        raise ValueError(f"No matching file found for mode {mode}")
+
+    return envi.open(hdr_file_path, raw_file_path)
+
+
+def _extract_wavelengths(metadata) -> pd.Series:
+    """Return the wavelenghts as a pandas series"""
+    return pd.Series(pd.to_numeric(metadata["wavelength"]), name="wavelenghts (nm)")
+
+
+def _create_data_array(spectral_data: BilFile, mode: str, wavelengths: pd.Series) -> xr.DataArray:
+    data_array = xr.DataArray(
+        da.from_array(spectral_data.asarray()),
+        dims=["sample", "point", "band"],
+        name=mode,
+    )
+    data_array = data_array.assign_coords(band=wavelengths.values)
+    data_array = data_array.rename({"band": "wavelength"})
+    return data_array
+
+
 @dataclass
 class SpecArray:
     """Class for Specim hyperspectral Camera data"""
 
-    folder: Path
-    capture: xr.DataArray = None
-    black: xr.DataArray = None
-    white: xr.DataArray = None
-    metadata: dict = None
-    wavelengths: pd.Series = None
+    capture: xr.DataArray
+    metadata: dict
+    wavelengths: pd.Series
 
-    def __post_init__(self):
-        """Initialize the properties of the class"""
-        self.spectral_data = self._load_spectral_data(mode="capture")
-        self.metadata = self.spectral_data.metadata
-        self.wavelengths = self._get_wavelenghts()
+    black: xr.DataArray
+    white: xr.DataArray
+
+    @classmethod
+    def from_folder(cls, folder: Path):
+        """Create a SpecArray from a folder"""
+        spectral_data = _load_spectral_data(folder=folder, mode="capture")
+        metadata = spectral_data.metadata
+        wavelengths = _extract_wavelengths(metadata=metadata)
 
         modes = ["capture", "black", "white"]
+        black = xr.DataArray()
+        white = xr.DataArray()
+        capture = xr.DataArray()
         for mode in modes:
             try:
-                spectral_data = self._load_spectral_data(mode=mode)
-                data_array = self._create_data_array(spectral_data, mode)
-                setattr(self, mode, data_array)
+                spectral_data = _load_spectral_data(folder, mode)
+                data_array = _create_data_array(spectral_data, mode, wavelengths)
+                if mode == "capture":
+                    capture = data_array
+                    if capture.size == 0:
+                        raise ValueError("No capture data found")
+                elif mode == "black":
+                    black = data_array
+                elif mode == "white":
+                    white = data_array
             except Exception as exception:
                 print(f"An error occurred reading {mode}: {exception}")
+        return cls(capture=capture, metadata=metadata, wavelengths=wavelengths, black=black, white=white)
 
     def __len__(self):
         """Return the number of records"""
@@ -44,16 +114,6 @@ class SpecArray:
 
     def __getitem__(self, key):
         return self.capture[key]
-
-    def _create_data_array(self, spectral_data: BilFile, mode: str) -> xr.DataArray:
-        data_array = xr.DataArray(
-            da.from_array(spectral_data.asarray()),
-            dims=["sample", "point", "band"],
-            name=mode,
-        )
-        data_array = data_array.assign_coords(band=self.wavelengths.values)
-        data_array = data_array.rename({"band": "wavelength"})
-        return data_array
 
     @property
     def shape(self):
@@ -82,48 +142,6 @@ class SpecArray:
         )
         broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband_albedo")
         return broadband_albedo
-
-    def _find_files(self):
-        """Find all files in the folder"""
-        capture_folder = self.folder / "capture"
-        hdr_files = list(capture_folder.glob("*.hdr"))
-        raw_files = list(capture_folder.glob("*.raw"))
-        return hdr_files, raw_files
-
-    def _load_spectral_data(self, mode="capture"):
-        """Load the spectral data"""
-        hdr_files, raw_files = self._find_files()
-
-        hdr_file_path = None
-        raw_file_path = None
-
-        for hdr_file, raw_file in zip(hdr_files, raw_files):
-            if mode == "capture":
-                if not hdr_file.stem.startswith(("WHITEREF", "DARKREF")):
-                    hdr_file_path = hdr_file
-                    raw_file_path = raw_file
-                    break
-            elif mode == "white":
-                prefix = "WHITEREF"
-                if hdr_file.stem.startswith(prefix):
-                    hdr_file_path = hdr_file
-                    raw_file_path = raw_file
-                    break
-            elif mode == "black":
-                prefix = "DARKREF"
-                if hdr_file.stem.startswith(prefix):
-                    hdr_file_path = hdr_file
-                    raw_file_path = raw_file
-                    break
-
-        if hdr_file_path is None or raw_file_path is None:
-            raise ValueError(f"No matching file found for mode {mode}")
-
-        return envi.open(hdr_file_path, raw_file_path)
-
-    def _get_wavelenghts(self) -> pd.Series:
-        """Return the wavelenghts as a pandas series"""
-        return pd.Series(pd.to_numeric(self.metadata["wavelength"]), name="wavelenghts (nm)")
 
     def _gen_wavelength_point_df(self, raw_array: ndarray) -> pd.DataFrame:
         """Generate a dataframe with the wavelenghts as index and points as colums"""
