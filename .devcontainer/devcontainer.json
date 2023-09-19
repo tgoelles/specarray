@@ -20,7 +20,8 @@
 				"GitHub.copilot",
 				"charliermarsh.ruff",
 				"ms-toolsai.jupyter",
-				"ms-python.mypy-type-checker"
+				"ms-python.mypy-type-checker",
+				"GitHub.copilot-chat"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
