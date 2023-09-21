@@ -1,3 +1,4 @@
+[![Test and Coverage](https://github.com/tgoelles/specarray/actions/workflows/test_docker.yml/badge.svg)](https://github.com/tgoelles/specarray/actions/workflows/test_docker.yml)
 [![Coverage Status](coverage.svg)](https://your-project-url)
 
 # SPECARRAY
