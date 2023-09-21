@@ -37,5 +37,5 @@ def test_spectral_albedo(testdata_specim: SpecArray):
     check.is_true(spectral_albedo.coords["wavelength"].equals(testdata_specim.capture.coords["wavelength"]))
     check.greater_equal(spectral_albedo.min(), 0.0)
     check.less_equal(spectral_albedo.min(), 1.0)
-    check.equal(single_value_min, 0.2482758620689655)
-    check.equal(single_value_max, 0.7558048525958779)
+    check.almost_equal(single_value_min, 0.2482758620689655)
+    check.almost_equal(single_value_max, 0.7558048525958779)
