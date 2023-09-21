@@ -43,14 +43,16 @@ class SpecArray:
 
     @property
     def has_black(self) -> bool:
+        """Return True if the black aka DARKREF reference is available"""
         return self.black.shape != ()
 
     @property
     def has_white(self) -> bool:
+        """Return True if the white aka WHITEREF reference is available"""
         return self.white.shape != ()
 
     @property
-    def spectral_albedo(self):
+    def spectral_albedo(self) -> xr.DataArray:
         """Calculate and return the spectral albedo. The values are limited to 0 and 1."""
         if self.has_black and self.has_white:
             spectral_albedo = (self.capture - self.black.mean(dim="sample")) / (
@@ -64,7 +66,7 @@ class SpecArray:
             raise ValueError("No black or white reference")
 
     @property
-    def broadband_albedo(self):
+    def broadband_albedo(self) -> xr.DataArray:
         """Calculate and return the broadband albedo"""
         if self.has_black and self.has_white:
             broadband_albedo = np.trapz(
@@ -74,7 +76,7 @@ class SpecArray:
                 self.spectral_albedo.coords["wavelength"].max().values
                 - self.spectral_albedo.coords["wavelength"].min().values
             )
-            broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband_albedo")
+            broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband albedo")
             return broadband_albedo
         else:
             raise ValueError("No black or white reference")

@@ -40,3 +40,10 @@ def test_spectral_albedo(testdata_specim: SpecArray):
     # single_value_max = float(spectral_albedo[0][0].max().compute())
     # check.almost_equal(single_value_min, 0.2482758620689655)
     # check.almost_equal(single_value_max, 0.7558048525958779)
+
+
+def test_broadband_albedo(testdata_specim: SpecArray):
+    broadband_albedo = testdata_specim.broadband_albedo
+    check.is_instance(broadband_albedo, DataArray)
+    check.equal(broadband_albedo.shape, (2, 1024))
+    check.equal(broadband_albedo.name, "broadband albedo")
