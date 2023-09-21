@@ -1,3 +1,5 @@
+[![Coverage Status](coverage.svg)](https://your-project-url)
+
 # SPECARRAY
 
 To read, analyze and plot hyperspectral data from Specim devices. Currently only tested with FX10 data.
