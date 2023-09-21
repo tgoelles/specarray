@@ -1,4 +1,4 @@
-# from the spectral pyhton package
+""" At each run of the test the data is genreated form the netcdf files"""
 
 from pathlib import Path
 import shutil
@@ -36,6 +36,7 @@ def main():
     # rename all files from .img to .raw
     for f in testdatadir.glob("*.img"):
         f.rename(f.with_suffix(".raw"))
+    shutil.copy(testdatadir, thisdir / "specim_data_no_darkref")
 
 
 if __name__ == "__main__":
