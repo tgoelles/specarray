@@ -19,7 +19,7 @@ specim_ex_name = "fake"
 
 def _save_image_ndarray(prefix=""):
     """Test saving an ENVI formated image from a numpy.ndarray."""
-    wavelengths = pd.read_csv(thisdir / "wavelengths.csv")
+    wavelengths = pd.read_csv(testdatadir / "wavelengths.csv")
     wavelengths = list(wavelengths["wavelengths (nm)"].values)
     if prefix == "":
         data = xr.open_dataset(testdatadir / "capture.nc")["capture"]
@@ -40,10 +40,9 @@ def gen_data():
     # rename all files from .img to .raw
     for f in testdatadir1.glob("*.img"):
         f.rename(f.with_suffix(".raw"))
-    shutil.copy(testdatadir1, thisdir / "specim_data_no_darkref")
 
 
-gen_data
+gen_data()
 
 
 @pytest.fixture()
