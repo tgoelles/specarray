@@ -78,10 +78,3 @@ class SpecArray:
             return broadband_albedo
         else:
             raise ValueError("No black or white reference")
-
-    def _gen_wavelength_point_df(self, raw_array: ndarray) -> pd.DataFrame:
-        """Generate a dataframe with the wavelenghts as index and points as colums"""
-        sample_df = pd.DataFrame(raw_array).transpose()
-        sample_df["wavelenght (nm)"] = self.wavelengths
-        sample_df.set_index("wavelenght (nm)", inplace=True)
-        return sample_df
