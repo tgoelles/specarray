@@ -49,6 +49,7 @@ class SpecArray:
         )
         spectral_albedo = xr.where(spectral_albedo < 0.0, 0.0, spectral_albedo)
         spectral_albedo = xr.where(spectral_albedo > 1.0, 1.0, spectral_albedo)
+        spectral_albedo.name = "spectral albedo"
         return spectral_albedo
 
     @property
