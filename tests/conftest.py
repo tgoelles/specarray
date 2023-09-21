@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import pytest
-
-from .testdata.gen_data import main as gen_data_main
+from specarray import SpecArray
 
 
 @pytest.fixture()
