@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from specarray import SpecArray
+import pytest
 from pytest_check import check
-
+from specarray import SpecArray
 from xarray import DataArray
 
 
@@ -47,3 +47,15 @@ def test_broadband_albedo(testdata_specim: SpecArray):
     check.is_instance(broadband_albedo, DataArray)
     check.equal(broadband_albedo.shape, (2, 1024))
     check.equal(broadband_albedo.name, "broadband albedo")
+
+
+@pytest.mark.parametrize("test_sets", ["testdata_no_black", "testdata_no_white"], indirect=True)
+def test_spectal_albedo_no_black_or_white(test_sets: SpecArray):
+    with pytest.raises(ValueError):
+        test_sets.spectral_albedo
+
+
+@pytest.mark.parametrize("test_sets", ["testdata_no_black", "testdata_no_white"], indirect=True)
+def test_spectal_albedo_no_black_or_white(test_sets: SpecArray):
+    with pytest.raises(ValueError):
+        test_sets.broadband_albedo

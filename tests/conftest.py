@@ -1,17 +1,12 @@
-from pathlib import Path
-
-import pytest
-from specarray import SpecArray
-
-from pathlib import Path
 import shutil
 from os import remove
-from time import sleep
+from pathlib import Path
 
 import pandas as pd
+import pytest
 import spectral.io.envi as envi
 import xarray as xr
-
+from specarray import SpecArray
 
 thisdir = Path(__file__).parent.absolute()
 testdatadir = thisdir / "testdata"
@@ -65,15 +60,31 @@ def testdata_specim_folder() -> Path:
 
 
 @pytest.fixture()
-def testdata_no_black() -> Path:
+def testdata_no_black_folder() -> Path:
     return no_black_dir
 
 
 @pytest.fixture()
-def testdata_no_white() -> Path:
+def testdata_no_white_folder() -> Path:
     return no_white_dir
 
 
 @pytest.fixture()
 def testdata_specim(testdata_specim_folder):
     return SpecArray.from_folder(testdata_specim_folder)
+
+
+@pytest.fixture()
+def testdata_no_black(testdata_no_black_folder):
+    return SpecArray.from_folder(testdata_no_black_folder)
+
+
+@pytest.fixture()
+def testdata_no_white(testdata_no_white_folder):
+    return SpecArray.from_folder(testdata_no_white_folder)
+
+
+@pytest.fixture
+def test_sets(request):
+    """for testing with different datasets"""
+    return request.getfixturevalue(request.param)
