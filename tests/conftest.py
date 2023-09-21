@@ -5,6 +5,8 @@ from specarray import SpecArray
 
 from pathlib import Path
 import shutil
+from os import remove
+from time import sleep
 
 import pandas as pd
 import spectral.io.envi as envi
@@ -13,7 +15,10 @@ import xarray as xr
 
 thisdir = Path(__file__).parent.absolute()
 testdatadir = thisdir / "testdata"
-testdatadir1 = thisdir / "testdata" / "specim_data" / "capture"
+specim_data_dir = thisdir / "testdata" / "specim_data"
+no_black_dir = testdatadir / "no_black"
+no_white_dir = testdatadir / "no_white"
+testdatadir1 = specim_data_dir / "capture"
 specim_ex_name = "fake"
 
 
@@ -32,7 +37,9 @@ def _save_image_ndarray(prefix=""):
 
 
 def gen_data():
-    shutil.rmtree(testdatadir1, ignore_errors=True)
+    shutil.rmtree(specim_data_dir, ignore_errors=True)
+    shutil.rmtree(no_black_dir, ignore_errors=True)
+    shutil.rmtree(no_white_dir, ignore_errors=True)
     testdatadir1.mkdir(parents=True, exist_ok=True)
     _save_image_ndarray()
     _save_image_ndarray("DARKREF_")
@@ -40,6 +47,13 @@ def gen_data():
     # rename all files from .img to .raw
     for f in testdatadir1.glob("*.img"):
         f.rename(f.with_suffix(".raw"))
+    # copy folder
+    shutil.copytree(specim_data_dir, no_black_dir)
+    shutil.copytree(specim_data_dir, no_white_dir)
+    remove(no_black_dir / "capture" / "DARKREF_fake.hdr")
+    remove(no_black_dir / "capture" / "DARKREF_fake.raw")
+    remove(no_white_dir / "capture" / "WHITEREF_fake.raw")
+    remove(no_white_dir / "capture" / "WHITEREF_fake.hdr")
 
 
 gen_data()
@@ -47,7 +61,17 @@ gen_data()
 
 @pytest.fixture()
 def testdata_specim_folder() -> Path:
-    return Path(__file__).parent.absolute() / "testdata/specim_data"
+    return specim_data_dir
+
+
+@pytest.fixture()
+def testdata_no_black() -> Path:
+    return no_black_dir
+
+
+@pytest.fixture()
+def testdata_no_white() -> Path:
+    return no_white_dir
 
 
 @pytest.fixture()

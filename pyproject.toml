@@ -139,6 +139,12 @@ markers = [
     "slow: marks tests as slow",
     "unit: fast offline tests",
 ]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    # note the use of single quote below to denote "raw" strings in TOML
+    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
 
 [tool.tox]
 legacy_tox_ini = """

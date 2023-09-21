@@ -134,3 +134,5 @@ notebooks/data*
 
 # ignore test data
 tests/testdata/specim_data
+tests/testdata/no_white
+tests/testdata/no_black

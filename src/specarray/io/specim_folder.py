@@ -6,6 +6,8 @@ import spectral.io.envi as envi
 import xarray as xr
 from spectral.io.bilfile import BilFile
 
+import warnings
+
 
 def _find_files(folder: Path):
     """Find all files in the folder"""
@@ -85,8 +87,11 @@ def from_specim_folder(
                     raise ValueError("No capture data found")
             elif mode == "black":
                 black = data_array
+                # warning that there is no Dark Reference
+                warnings.warn("No Dark Reference found")
             elif mode == "white":
                 white = data_array
+                warnings.warn("No White Reference found")
         except Exception as exception:
             print(f"An error occurred reading {mode}: {exception}")
     return capture, metadata, wavelengths, black, white
