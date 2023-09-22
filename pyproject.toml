@@ -57,8 +57,7 @@ test = [
     "shellcheck-py==0.9.0.2",
     "scipy"
 ]
-
-
+dev = ["bump-my-version"]
 
 [project.urls]
 Documentation = "https://tgoelles.github.io/specarray/"
@@ -83,6 +82,14 @@ branch = true
 
 [tool.coverage.report]
 fail_under = 100
+
+[[tool.bumpversion.files]]
+filename = "src/specarray/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "Unreleased"
+replace = "{new_version}"
 
 [tool.flake8]
 max-line-length = 120
