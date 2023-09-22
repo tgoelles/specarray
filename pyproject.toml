@@ -85,8 +85,8 @@ fail_under = 100
 
 [tool.bumpversion]
 allow_dirty = false
-commit = false
-tag = false
+commit = true
+tag = true
 current_version = "0.1.0"
 message = "Bump version: {current_version} → {new_version}"
 sign_tags = false
