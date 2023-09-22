@@ -7,7 +7,7 @@ To read, analyze and plot hyperspectral data from Specim devices. Currently only
 
 ## Core features
 
-* read Specim FX10 data
+* read Specim instrument data 
 * support for large files thanks to dask
 * using xarray for data handling and data analysis
 * computation of spectral albedo and braodband albedo if white and dark reference is available
