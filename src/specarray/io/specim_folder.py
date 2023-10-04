@@ -88,10 +88,12 @@ def from_specim_folder(
             elif mode == "black":
                 black = data_array
                 # warning that there is no Dark Reference
-                warnings.warn("No Dark Reference found")
+                if black.size == 0:
+                    warnings.warn("No Dark Reference found")
             elif mode == "white":
                 white = data_array
-                warnings.warn("No White Reference found")
+                if white.size == 0:
+                    warnings.warn("No White Reference found")
         except Exception as exception:
             print(f"An error occurred reading {mode}: {exception}")
     return capture, metadata, wavelengths, black, white
