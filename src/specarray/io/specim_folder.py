@@ -56,8 +56,8 @@ def _extract_wavelengths(metadata) -> pd.Series:
 
 def _create_data_array(spectral_data: BilFile, mode: str, wavelengths: pd.Series) -> xr.DataArray:
     data_array = xr.DataArray(
-        da.from_array(spectral_data.asarray()),
-        dims=["sample", "point", "band"],
+        da.from_array(spectral_data._memmap, chunks=("auto",-1, -1)),
+        dims=["sample", "band", "point"],
         name=mode,
     )
     data_array = data_array.assign_coords(band=wavelengths.values)
