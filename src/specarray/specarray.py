@@ -70,7 +70,11 @@ class SpecArray:
         """Calculate and return the broadband albedo"""
         if self.has_black and self.has_white:
             broadband_albedo = np.trapz(
-                self.spectral_albedo,
+                self.spectral_albedo.transpose(
+                    "sample",
+                    "point",
+                    "wavelength",
+                ),
                 self.spectral_albedo.coords["wavelength"],
             ) / (
                 self.spectral_albedo.coords["wavelength"].max().values
