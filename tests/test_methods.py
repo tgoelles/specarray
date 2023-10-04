@@ -18,13 +18,13 @@ def test_len(testdata_specim: SpecArray):
 
 
 def test_getitem(testdata_specim: SpecArray):
-    check.equal(testdata_specim[0].shape, (1024, 448))
-    check.equal(testdata_specim[1].shape, (1024, 448))
+    check.equal(testdata_specim[0].shape, (448, 1024))
+    check.equal(testdata_specim[1].shape, (448, 1024))
     check.is_instance(testdata_specim[0], DataArray)
 
 
 def test_shape(testdata_specim: SpecArray):
-    check.equal(testdata_specim.shape, (2, 1024, 448))
+    check.equal(testdata_specim.shape, (2, 448, 1024))
 
 
 def test_spectral_albedo(testdata_specim: SpecArray):
