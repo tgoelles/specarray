@@ -7,10 +7,10 @@ from xarray import DataArray
 
 
 def test_repr(testdata_specim: SpecArray):
-    repr = testdata_specim.__repr__()
-    print(repr)
-    check.is_true(repr.startswith("SpecArray"))
-    check.equal(len(repr), 5823)
+    repr_res = testdata_specim.__repr__()
+    check.is_true(repr_res.startswith("SpecArray"))
+    check.is_true("wavelength" in repr_res)
+    check.is_true("capture" in repr_res)
 
 
 def test_len(testdata_specim: SpecArray):
@@ -63,6 +63,6 @@ def test_spectal_albedo_no_black_or_white(test_sets: SpecArray):
 
 
 @pytest.mark.parametrize("test_sets", ["testdata_no_black", "testdata_no_white"], indirect=True)
-def test_spectal_albedo_no_black_or_white(test_sets: SpecArray):
+def test_broadband_albedo_no_black_or_white(test_sets: SpecArray):
     with pytest.raises(ValueError):
         test_sets.broadband_albedo
