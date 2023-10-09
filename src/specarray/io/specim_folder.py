@@ -56,7 +56,7 @@ def _extract_wavelengths(metadata) -> pd.Series:
 
 def _create_data_array(spectral_data: BilFile, mode: str, wavelengths: pd.Series) -> xr.DataArray:
     data_array = xr.DataArray(
-        da.from_array(spectral_data._memmap, chunks=("auto",-1, -1)),
+        da.from_array(spectral_data._memmap, chunks=("auto", -1, -1)),
         dims=["sample", "band", "point"],
         name=mode,
     )
@@ -83,6 +83,7 @@ def from_specim_folder(
             data_array = _create_data_array(spectral_data, mode, wavelengths)
             if mode == "capture":
                 capture = data_array
+                capture_spectral = spectral_data
                 if capture.size == 0:
                     raise ValueError("No capture data found")
             elif mode == "black":
@@ -96,4 +97,4 @@ def from_specim_folder(
                     warnings.warn("No White Reference found")
         except Exception as exception:
             print(f"An error occurred reading {mode}: {exception}")
-    return capture, metadata, wavelengths, black, white
+    return capture, metadata, wavelengths, black, white, capture_spectral
