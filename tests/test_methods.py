@@ -33,7 +33,6 @@ def test_dims(testdata_specim: SpecArray):
 
 def test_spectral_albedo(testdata_specim: SpecArray):
     spectral_albedo = testdata_specim.spectral_albedo
-
     check.is_instance(spectral_albedo, DataArray)
     check.equal(spectral_albedo.shape, testdata_specim.capture.shape)
     check.equal(spectral_albedo.name, "spectral albedo")
@@ -42,10 +41,12 @@ def test_spectral_albedo(testdata_specim: SpecArray):
     check.less_equal(spectral_albedo.min(), 1.0)
     check.equal(spectral_albedo.dims, ("sample", "wavelength", "point"))
     check.equal(spectral_albedo.dims, testdata_specim.capture.dims)
-    # single_value_min = float(spectral_albedo[0][0].min().compute())
-    # single_value_max = float(spectral_albedo[0][0].max().compute())
-    # check.almost_equal(single_value_min, 0.2482758620689655)
-    # check.almost_equal(single_value_max, 0.7558048525958779)
+    check.almost_equal(float(spectral_albedo.sel(sample=0).max().as_numpy().values), 0.7786328655500226)
+    check.almost_equal(float(spectral_albedo.sel(sample=0).min().as_numpy().values), 0.125)
+    check.almost_equal(
+        float(spectral_albedo.sel(sample=0, point=0).sel(wavelength=1000, method="nearest").as_numpy().values),
+        0.28365385,
+    )
 
 
 def test_broadband_albedo(testdata_specim: SpecArray):

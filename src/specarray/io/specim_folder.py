@@ -1,4 +1,5 @@
 from pathlib import Path
+from os import listdir
 
 import dask.array as da
 import pandas as pd
@@ -6,47 +7,8 @@ import spectral.io.envi as envi
 import xarray as xr
 from spectral.io.bilfile import BilFile
 
+
 import warnings
-
-
-def _find_files(folder: Path):
-    """Find all files in the folder"""
-    capture_folder = folder / "capture"
-    hdr_files = list(capture_folder.glob("*.hdr"))
-    raw_files = list(capture_folder.glob("*.raw"))
-    return hdr_files, raw_files
-
-
-def _load_spectral_data(folder: Path, mode="capture"):
-    """Load the spectral data"""
-    hdr_files, raw_files = _find_files(folder)
-
-    hdr_file_path = None
-    raw_file_path = None
-
-    for hdr_file, raw_file in zip(hdr_files, raw_files):
-        if mode == "capture":
-            if not hdr_file.stem.startswith(("WHITEREF", "DARKREF")):
-                hdr_file_path = hdr_file
-                raw_file_path = raw_file
-                break
-        elif mode == "white":
-            prefix = "WHITEREF"
-            if hdr_file.stem.startswith(prefix):
-                hdr_file_path = hdr_file
-                raw_file_path = raw_file
-                break
-        elif mode == "black":
-            prefix = "DARKREF"
-            if hdr_file.stem.startswith(prefix):
-                hdr_file_path = hdr_file
-                raw_file_path = raw_file
-                break
-
-    if hdr_file_path is None or raw_file_path is None:
-        raise ValueError(f"No matching file found for mode {mode}")
-
-    return envi.open(hdr_file_path, raw_file_path)
 
 
 def _extract_wavelengths(metadata) -> pd.Series:
@@ -67,34 +29,59 @@ def _create_data_array(spectral_data: BilFile, mode: str, wavelengths: pd.Series
 
 def from_specim_folder(
     folder: Path,
-) -> "tuple[xr.DataArray, dict, pd.Series, xr.DataArray, xr.DataArray]":
+) -> "tuple[xr.DataArray, dict, pd.Series, xr.DataArray, xr.DataArray, BilFile]":
     """Create a SpecArray from a folder"""
-    spectral_data = _load_spectral_data(folder=folder, mode="capture")
-    metadata = spectral_data.metadata
-    wavelengths = _extract_wavelengths(metadata=metadata)
 
-    modes = ["capture", "black", "white"]
+    modes = [
+        "capture",
+        "DARKREF_",
+        "WHITEREF_",
+    ]
+    names = {"capture": "capture", "DARKREF_": "black", "WHITEREF_": "white"}
     black = xr.DataArray()
     white = xr.DataArray()
     capture = xr.DataArray()
+
+    capture_folder = folder / "capture"
+
     for mode in modes:
-        try:
-            spectral_data = _load_spectral_data(folder, mode)
+        if mode == "capture":
+            hdr_file_path = [
+                capture_folder / file
+                for file in listdir(capture_folder)
+                if not file.startswith("WHITEREF") and not file.startswith("DARKREF") and file.endswith(".hdr")
+            ]
+            raw_file_path = [
+                capture_folder / file
+                for file in listdir(capture_folder)
+                if not file.startswith("WHITEREF") and not file.startswith("DARKREF") and file.endswith(".raw")
+            ]
+        else:
+            hdr_file_path = list(capture_folder.glob(f"{mode}*.hdr"))
+            raw_file_path = list(capture_folder.glob(f"{mode}*.raw"))
+
+        if len(hdr_file_path) > 0 and len(raw_file_path) > 0:
+            spectral_data = envi.open(hdr_file_path[0], raw_file_path[0])
+            metadata = spectral_data.metadata
+            wavelengths = _extract_wavelengths(metadata=metadata)
             data_array = _create_data_array(spectral_data, mode, wavelengths)
-            if mode == "capture":
-                capture = data_array
-                capture_spectral = spectral_data
-                if capture.size == 0:
-                    raise ValueError("No capture data found")
-            elif mode == "black":
-                black = data_array
-                # warning that there is no Dark Reference
-                if black.size == 0:
-                    warnings.warn("No Dark Reference found")
-            elif mode == "white":
-                white = data_array
-                if white.size == 0:
-                    warnings.warn("No White Reference found")
-        except Exception as exception:
-            print(f"An error occurred reading {mode}: {exception}")
+            data_array.name = names[mode]
+        else:
+            break
+
+        if mode == "capture":
+            capture = data_array
+            capture_spectral = spectral_data
+            metadata = metadata
+            wavelengths = wavelengths
+        elif mode == "DARKREF_":
+            black = data_array
+        elif mode == "WHITEREF_":
+            white = data_array
+
+        if len(hdr_file_path) == 0:
+            warnings.warn(f"No {mode} file found")
+
+    if len(capture) == 0:
+        raise ValueError("No capture file found")
     return capture, metadata, wavelengths, black, white, capture_spectral

@@ -136,3 +136,4 @@ notebooks/data*
 tests/testdata/specim_data
 tests/testdata/no_white
 tests/testdata/no_black
+tests/demo_test.ipynb
