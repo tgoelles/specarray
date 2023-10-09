@@ -9,8 +9,13 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from numpy import ndarray
+from spectral.io.bilfile import BilFile
 
 from .io.specim_folder import from_specim_folder
+
+
+def trapz(x, y):
+    return np.trapz(y, x)
 
 
 @dataclass
@@ -23,6 +28,8 @@ class SpecArray:
 
     black: xr.DataArray
     white: xr.DataArray
+
+    _capture_spectral: BilFile  # spectral lib data, lazy loaded
 
     @classmethod
     def from_folder(cls, folder: Path):
@@ -69,17 +76,20 @@ class SpecArray:
     def broadband_albedo(self) -> xr.DataArray:
         """Calculate and return the broadband albedo"""
         if self.has_black and self.has_white:
-            broadband_albedo = np.trapz(
-                self.spectral_albedo.transpose(
+            spectral_albedo = self.spectral_albedo.chunk({"sample": -1})
+            broadband_albedo = xr.apply_ufunc(
+                trapz,
+                spectral_albedo.coords["wavelength"],
+                spectral_albedo.transpose(
                     "sample",
                     "point",
                     "wavelength",
                 ),
-                self.spectral_albedo.coords["wavelength"],
-            ) / (
-                self.spectral_albedo.coords["wavelength"].max().values
-                - self.spectral_albedo.coords["wavelength"].min().values
-            )
+                input_core_dims=[["wavelength"], ["wavelength", "sample", "point"]],
+                output_core_dims=[["sample", "point"]],
+                dask="parallelized",
+                output_dtypes=[float],
+            ) / (spectral_albedo.coords["wavelength"].max().values - spectral_albedo.coords["wavelength"].min().values)
             broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband albedo")
             return broadband_albedo
         else:
