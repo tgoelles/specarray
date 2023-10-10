@@ -55,6 +55,7 @@ def test_broadband_albedo(testdata_specim: SpecArray):
     check.equal(broadband_albedo.shape, (2, 1024))
     check.equal(broadband_albedo.dims, ("sample", "point"))
     check.equal(broadband_albedo.name, "broadband albedo")
+    check.almost_equal(float(broadband_albedo.sel(sample=0, point=0).as_numpy().values), 0.61686938)
 
 
 @pytest.mark.parametrize("test_sets", ["testdata_no_black", "testdata_no_white"], indirect=True)
