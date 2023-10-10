@@ -5,10 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import xarray as xr
-from numpy import ndarray
 from spectral.io.bilfile import BilFile
 
 from .io.specim_folder import from_specim_folder
@@ -79,19 +77,12 @@ class SpecArray:
     @property
     def broadband_albedo(self) -> xr.DataArray:
         """Calculate and return the broadband albedo"""
+
         if self.has_black and self.has_white:
-            broadband_albedo = np.trapz(
-                self.spectral_albedo.transpose(
-                    "sample",
-                    "point",
-                    "wavelength",
-                ),
-                self.spectral_albedo.coords["wavelength"],
-            ) / (
-                self.spectral_albedo.coords["wavelength"].max().values
-                - self.spectral_albedo.coords["wavelength"].min().values
-            )
-            broadband_albedo = xr.DataArray(broadband_albedo, dims=["sample", "point"], name="broadband albedo")
+            wavelength_max = self.spectral_albedo.coords["wavelength"].max().values
+            wavelength_min = self.spectral_albedo.coords["wavelength"].min().values
+            broadband_albedo = self.spectral_albedo.integrate("wavelength") / (wavelength_max - wavelength_min)
+            broadband_albedo.name = "broadband albedo"
             return broadband_albedo
         else:
             raise ValueError("No black or white reference")
