@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - added hidden property _capture_spectral which is the orginal representation of the capture data from the spectral library
 
+### Changed
+- broad_bandalbeod now works also with dask and very large datasets
+
 ### Fixed
 
 - an issue when black and white references where mixed up
